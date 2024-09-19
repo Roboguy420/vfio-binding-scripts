@@ -2,24 +2,36 @@
 
 set -v -x
 
-# Override drivers with the NVIDIA ones
-echo "nvidia" > /sys/bus/pci/devices/0000:01:00.0/driver_override
-echo "snd_hda_intel" > /sys/bus/pci/devices/0000:01:00.1/driver_override
+# Set these to your dGPU drivers and buses
+DRIVERSVIDEO='nvidia'
+DRIVERSAUDIO='snd_hda_intel'
+
+BUSVIDEO='0000:01:00.0'
+BUSAUDIO='0000:01:00.1'
+
+BUSVIDEOVIRSH='pci_0000_01_00_0'
+BUSAUDIOVIRSH='pci_0000_01_00_1'
+
+# Override drivers with the dGPU ones
+echo $DRIVERSVIDEO > "/sys/bus/pci/devices/$BUSVIDEO/driver_override"
+echo $DRIVERSAUDIO > "/sys/bus/pci/devices/$BUSAUDIO/driver_override"
 
 # Reattach devices to host
-virsh nodedev-reattach pci_0000_01_00_0
-virsh nodedev-reattach pci_0000_01_00_1
+virsh nodedev-reattach $BUSVIDEOVIRSH
+virsh nodedev-reattach $BUSAUDIOVIRSH
 
 # Unbind devices from vfio-pci driver
-echo "0000:01:00.0" > /sys/bus/pci/drivers/vfio-pci/unbind
-echo "0000:01:00.1" > /sys/bus/pci/drivers/vfio-pci/unbind
+echo $BUSVIDEO > /sys/bus/pci/drivers/vfio-pci/unbind
+echo $BUSAUDIO > /sys/bus/pci/drivers/vfio-pci/unbind
 
-# Load NVIDIA drivers and bind them to card
-modprobe -i nvidia nvidia-uvm snd_hda_intel
-echo "0000:01:00.0" > /sys/bus/pci/drivers/nvidia/bind
-echo "0000:01:00.1" > /sys/bus/pci/drivers/snd_hda_intel/bind
+# Load dGPU drivers and bind them to card
+modprobe -i $DRIVERSVIDEO $DRIVERSAUDIO
+echo $BUSVIDEO > "/sys/bus/pci/drivers/$DRIVERSVIDEO/bind"
+echo $BUSAUDIO > "/sys/bus/pci/drivers/$DRIVERSAUDIO/bind"
 
-# Load additional kernel modules, these seem to only load properly if they're on separate lines
+# Keep these lines uncommented if you are on NVIDIA
+# Comment these lines out otherwise
+modprobe -i nvidia-uvm
 modprobe -i nvidia-modeset
 modprobe -i nvidia-drm
 
