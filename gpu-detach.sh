@@ -9,9 +9,6 @@ DRIVERSAUDIO='snd_hda_intel'
 BUSVIDEO='0000:01:00.0'
 BUSAUDIO='0000:01:00.1'
 
-BUSVIDEOVIRSH='pci_0000_01_00_0'
-BUSAUDIOVIRSH='pci_0000_01_00_1'
-
 # Unload NVIDIA DRM driver to prevent hangs
 modprobe -r nvidia_drm
 

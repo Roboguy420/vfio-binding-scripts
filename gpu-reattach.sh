@@ -9,9 +9,6 @@ DRIVERSAUDIO='snd_hda_intel'
 BUSVIDEO='0000:01:00.0'
 BUSAUDIO='0000:01:00.1'
 
-BUSVIDEOVIRSH='pci_0000_01_00_0'
-BUSAUDIOVIRSH='pci_0000_01_00_1'
-
 # Override drivers with the dGPU ones
 echo $DRIVERSVIDEO > "/sys/bus/pci/devices/$BUSVIDEO/driver_override"
 echo $DRIVERSAUDIO > "/sys/bus/pci/devices/$BUSAUDIO/driver_override"
