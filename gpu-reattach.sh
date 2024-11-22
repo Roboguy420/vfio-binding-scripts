@@ -16,10 +16,6 @@ BUSAUDIOVIRSH='pci_0000_01_00_1'
 echo $DRIVERSVIDEO > "/sys/bus/pci/devices/$BUSVIDEO/driver_override"
 echo $DRIVERSAUDIO > "/sys/bus/pci/devices/$BUSAUDIO/driver_override"
 
-# Reattach devices to host
-virsh nodedev-reattach $BUSVIDEOVIRSH
-virsh nodedev-reattach $BUSAUDIOVIRSH
-
 # Unbind devices from vfio-pci driver
 echo $BUSVIDEO > /sys/bus/pci/drivers/vfio-pci/unbind
 echo $BUSAUDIO > /sys/bus/pci/drivers/vfio-pci/unbind

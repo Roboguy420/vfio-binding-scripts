@@ -12,6 +12,9 @@ BUSAUDIO='0000:01:00.1'
 BUSVIDEOVIRSH='pci_0000_01_00_0'
 BUSAUDIOVIRSH='pci_0000_01_00_1'
 
+# Unload NVIDIA DRM driver to prevent hangs
+modprobe -r nvidia_drm
+
 # Override devices drivers with vfio-pci ones
 echo 'vfio-pci' > "/sys/bus/pci/devices/$BUSVIDEO/driver_override"
 echo 'vfio-pci' > "/sys/bus/pci/devices/$BUSAUDIO/driver_override"
@@ -24,10 +27,6 @@ echo $BUSAUDIO > "/sys/bus/pci/drivers/$DRIVERSAUDIO/unbind"
 modprobe -i vfio_pci vfio_pci_core vfio_iommu_type1
 echo $BUSVIDEO > /sys/bus/pci/drivers/vfio-pci/bind
 echo $BUSAUDIO > /sys/bus/pci/drivers/vfio-pci/bind
-
-# Detach devices from host
-virsh nodedev-detach $BUSVIDEOVIRSH
-virsh nodedev-detach $BUSAUDIOVIRSH
 
 # End
 
