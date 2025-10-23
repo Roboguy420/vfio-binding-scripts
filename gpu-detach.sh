@@ -45,6 +45,12 @@ echo Done!
 # Unload NVIDIA DRM driver to prevent hangs
 echo -n 'Unloading nvidia_drm... '
 modprobe -r nvidia_drm
+RETVAL=$?
+if [ $RETVAL -ne 0 ]; then
+  echo "Failed to unload nvidia_drm with exit code $RETVAL. Module may still be in use. nvidia_drm is in use by:"
+  lsmod | grep nvidia_drm
+  exit 2
+fi
 echo Done!
 
 # Override devices drivers with vfio-pci ones
@@ -62,6 +68,11 @@ echo Done!
 # Load vfio drivers and bind them to card
 echo -n 'Probing vfio drivers... '
 modprobe -i vfio_pci vfio_pci_core vfio_iommu_type1
+RETVAL=$?
+if [ $RETVAL -ne 0 ]; then
+  echo "Failed to probe vfio drivers with exit code $RETVAL."
+  exit 3
+fi
 echo Done!
 echo -n 'Binding vfio drivers to card... '
 echo $BUSVIDEO > /sys/bus/pci/drivers/vfio-pci/bind
